@@ -22,6 +22,7 @@ interface Input {
   isLeft(): boolean;
   isUp(): boolean;
   isDown(): boolean;
+  handleInput(): void;
 }
 
 class Right implements Input {
@@ -36,6 +37,9 @@ class Right implements Input {
   }
   isDown() {
     return false;
+  }
+  handleInput() {
+    moveHorizontal(1);
   }
 }
 
@@ -52,6 +56,9 @@ class Left implements Input {
   isDown() {
     return false;
   }
+  handleInput() {
+    moveHorizontal(-1);
+  }
 }
 
 class Up implements Input {
@@ -67,6 +74,9 @@ class Up implements Input {
   isDown() {
     return false;
   }
+  handleInput() {
+    moveVertical(-1);
+  }
 }
 
 class Down implements Input {
@@ -81,6 +91,9 @@ class Down implements Input {
   }
   isDown() {
     return true;
+  }
+  handleInput() {
+    moveVertical(1);
   }
 }
 
@@ -152,17 +165,10 @@ function moveVertical(dy: number) {
   }
 }
 
-function handleInput(input: Input) {
-  if (input.isLeft()) moveHorizontal(-1);
-  else if (input.isRight()) moveHorizontal(1);
-  else if (input.isUp()) moveVertical(-1);
-  else if (input.isDown()) moveVertical(1);
-}
-
 function handleInputs() {
   while (inputs.length > 0) {
     let current = inputs.pop();
-    handleInput(current);
+    current.handleInput();
   }
 }
 
