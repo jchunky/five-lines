@@ -164,7 +164,16 @@ class Player implements Tile {
   }
 }
 
+enum FallingState {
+  FALLING,
+  RESTING,
+}
+
 class Stone implements Tile {
+  private readonly falling: FallingState;
+  constructor(falling: FallingState) {
+    this.falling = falling;
+  }
   isStony() {
     return true;
   }
@@ -175,6 +184,7 @@ class Stone implements Tile {
 
   moveHorizontal(dx: number) {
     if (
+      !this.falling &&
       map[playery][playerx + dx + dx].isAir() &&
       !map[playery + 1][playerx + dx].isAir()
     ) {
@@ -192,40 +202,7 @@ class Stone implements Tile {
     return false;
   }
   isFallingStone() {
-    return false;
-  }
-  isFallingBox() {
-    return false;
-  }
-  isLock1() {
-    return false;
-  }
-  isLock2() {
-    return false;
-  }
-}
-
-class FallingStone implements Tile {
-  isStony() {
-    return true;
-  }
-  isBoxy() {
-    return false;
-  }
-  moveVertical(dy: number) {}
-
-  moveHorizontal(dx: number) {}
-
-  draw(g: CanvasRenderingContext2D, x: number, y: number) {
-    g.fillStyle = "#0000cc";
-    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-  }
-
-  isAir() {
-    return false;
-  }
-  isFallingStone() {
-    return true;
+    return this.falling === FallingState.FALLING;
   }
   isFallingBox() {
     return false;
@@ -467,9 +444,9 @@ function transformTile(tile: RawTile) {
     case RawTile.PLAYER:
       return new Player();
     case RawTile.STONE:
-      return new Stone();
+      return new Stone(FallingState.RESTING);
     case RawTile.FALLING_STONE:
-      return new FallingStone();
+      return new Stone(FallingState.FALLING);
     case RawTile.BOX:
       return new Box();
     case RawTile.FALLING_BOX:
@@ -565,13 +542,13 @@ function handleInputs() {
 
 function updateTile(y: number, x: number) {
   if (map[y][x].isStony() && map[y + 1][x].isAir()) {
-    map[y + 1][x] = new FallingStone();
+    map[y + 1][x] = new Stone(FallingState.FALLING);
     map[y][x] = new Air();
   } else if (map[y][x].isBoxy() && map[y + 1][x].isAir()) {
     map[y + 1][x] = new FallingBox();
     map[y][x] = new Air();
   } else if (map[y][x].isFallingStone()) {
-    map[y][x] = new Stone();
+    map[y][x] = new Stone(FallingState.RESTING);
   } else if (map[y][x].isFallingBox()) {
     map[y][x] = new Box();
   }
