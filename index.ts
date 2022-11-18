@@ -25,6 +25,7 @@ interface Tile {
   isBoxy(): boolean;
   isLock1(): boolean;
   isLock2(): boolean;
+  isFalling(): boolean;
   draw(g: CanvasRenderingContext2D, x: number, y: number): void;
   moveHorizontal(dx: number): void;
   moveVertical(dy: number): void;
@@ -33,6 +34,9 @@ interface Tile {
 }
 
 class Air implements Tile {
+  isFalling() {
+    return false;
+  }
   drop() {}
   rest() {}
   isStony() {
@@ -69,6 +73,9 @@ class Air implements Tile {
 }
 
 class Flux implements Tile {
+  isFalling() {
+    return false;
+  }
   drop() {}
   rest() {}
   isStony() {
@@ -108,6 +115,9 @@ class Flux implements Tile {
 }
 
 class Unbreakable implements Tile {
+  isFalling() {
+    return false;
+  }
   drop() {}
   rest() {}
   isStony() {
@@ -143,6 +153,9 @@ class Unbreakable implements Tile {
 }
 
 class Player implements Tile {
+  isFalling() {
+    return false;
+  }
   drop() {}
   rest() {}
   isStony() {
@@ -206,6 +219,9 @@ class Stone implements Tile {
   constructor(falling: FallingState) {
     this.falling = falling;
   }
+  isFalling() {
+    return this.falling.isFalling();
+  }
   drop() {
     this.falling = new Falling();
   }
@@ -251,6 +267,9 @@ class Box implements Tile {
   constructor(falling: FallingState) {
     this.falling = falling;
   }
+  isFalling() {
+    return this.falling.isFalling();
+  }
   drop() {
     this.falling = new Falling();
   }
@@ -292,6 +311,9 @@ class Box implements Tile {
 }
 
 class Key1 implements Tile {
+  isFalling() {
+    return false;
+  }
   drop() {}
   rest() {}
   isStony() {
@@ -333,6 +355,9 @@ class Key1 implements Tile {
 }
 
 class Key2 implements Tile {
+  isFalling() {
+    return false;
+  }
   drop() {}
   rest() {}
   isStony() {
@@ -374,6 +399,9 @@ class Key2 implements Tile {
 }
 
 class Lock1 implements Tile {
+  isFalling() {
+    return false;
+  }
   drop() {}
   rest() {}
   isStony() {
@@ -409,6 +437,9 @@ class Lock1 implements Tile {
 }
 
 class Lock2 implements Tile {
+  isFalling() {
+    return false;
+  }
   drop() {}
   rest() {}
   isStony() {
@@ -554,7 +585,7 @@ function updateTile(y: number, x: number) {
   if ((map[y][x].isStony() || map[y][x].isBoxy()) && map[y + 1][x].isAir()) {
     map[y + 1][x].drop();
     map[y][x] = new Air();
-  } else if (map[y][x].isFallingStone() || map[y][x].isFallingBox()) {
+  } else if (map[y][x].isFalling()) {
     map[y][x].rest();
   }
 }
