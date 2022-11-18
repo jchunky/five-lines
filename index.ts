@@ -217,6 +217,10 @@ class Resting implements FallingState {
 }
 
 class Stone implements Tile {
+  private falling: FallingState;
+  constructor(falling: FallingState) {
+    this.falling = falling;
+  }
   updateTile(y: number, x: number) {
     if (map[y][x].canFall() && map[y + 1][x].isAir()) {
       map[y][x].drop();
@@ -227,10 +231,6 @@ class Stone implements Tile {
     }
   }
 
-  private falling: FallingState;
-  constructor(falling: FallingState) {
-    this.falling = falling;
-  }
   canFall() {
     return true;
   }
@@ -266,6 +266,10 @@ class Stone implements Tile {
 }
 
 class Box implements Tile {
+  private falling: FallingState;
+  constructor(falling: FallingState) {
+    this.falling = falling;
+  }
   updateTile(y: number, x: number) {
     if (map[y][x].canFall() && map[y + 1][x].isAir()) {
       map[y][x].drop();
@@ -276,10 +280,6 @@ class Box implements Tile {
     }
   }
 
-  private falling: FallingState;
-  constructor(falling: FallingState) {
-    this.falling = falling;
-  }
   canFall() {
     return true;
   }
