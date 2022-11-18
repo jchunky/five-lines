@@ -231,8 +231,8 @@ class Stone implements Tile {
 }
 
 class Box implements Tile {
-  private readonly falling: boolean;
-  constructor(falling: boolean) {
+  private readonly falling: FallingState;
+  constructor(falling: FallingState) {
     this.falling = falling;
   }
   isStony() {
@@ -244,14 +244,7 @@ class Box implements Tile {
   moveVertical(dy: number) {}
 
   moveHorizontal(dx: number) {
-    if (
-      !this.isFallingBox() &&
-      map[playery][playerx + dx + dx].isAir() &&
-      !map[playery + 1][playerx + dx].isAir()
-    ) {
-      map[playery][playerx + dx + dx] = this;
-      moveToTile(playerx + dx, playery);
-    }
+    this.falling.moveHorizontal(this, dx);
   }
 
   draw(g: CanvasRenderingContext2D, x: number, y: number) {
@@ -266,7 +259,7 @@ class Box implements Tile {
     return false;
   }
   isFallingBox() {
-    return this.falling;
+    return this.falling.isFalling();
   }
   isLock1() {
     return false;
@@ -435,9 +428,9 @@ function transformTile(tile: RawTile) {
     case RawTile.FALLING_STONE:
       return new Stone(new Falling());
     case RawTile.BOX:
-      return new Box(false);
+      return new Box(new Resting());
     case RawTile.FALLING_BOX:
-      return new Box(true);
+      return new Box(new Falling());
     case RawTile.KEY1:
       return new Key1();
     case RawTile.LOCK1:
@@ -532,12 +525,12 @@ function updateTile(y: number, x: number) {
     map[y + 1][x] = new Stone(new Falling());
     map[y][x] = new Air();
   } else if (map[y][x].isBoxy() && map[y + 1][x].isAir()) {
-    map[y + 1][x] = new Box(true);
+    map[y + 1][x] = new Box(new Falling());
     map[y][x] = new Air();
   } else if (map[y][x].isFallingStone()) {
     map[y][x] = new Stone(new Resting());
   } else if (map[y][x].isFallingBox()) {
-    map[y][x] = new Box(false);
+    map[y][x] = new Box(new Resting());
   }
 }
 
