@@ -231,6 +231,10 @@ class Stone implements Tile {
 }
 
 class Box implements Tile {
+  private readonly falling: boolean;
+  constructor(falling: boolean) {
+    this.falling = falling;
+  }
   isStony() {
     return false;
   }
@@ -241,6 +245,7 @@ class Box implements Tile {
 
   moveHorizontal(dx: number) {
     if (
+      !this.isFallingBox() &&
       map[playery][playerx + dx + dx].isAir() &&
       !map[playery + 1][playerx + dx].isAir()
     ) {
@@ -261,40 +266,7 @@ class Box implements Tile {
     return false;
   }
   isFallingBox() {
-    return false;
-  }
-  isLock1() {
-    return false;
-  }
-  isLock2() {
-    return false;
-  }
-}
-
-class FallingBox implements Tile {
-  isStony() {
-    return false;
-  }
-  isBoxy() {
-    return true;
-  }
-  moveVertical(dy: number) {}
-
-  moveHorizontal(dx: number) {}
-
-  draw(g: CanvasRenderingContext2D, x: number, y: number) {
-    g.fillStyle = "#8b4513";
-    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-  }
-
-  isAir() {
-    return false;
-  }
-  isFallingStone() {
-    return false;
-  }
-  isFallingBox() {
-    return true;
+    return this.falling;
   }
   isLock1() {
     return false;
@@ -463,9 +435,9 @@ function transformTile(tile: RawTile) {
     case RawTile.FALLING_STONE:
       return new Stone(new Falling());
     case RawTile.BOX:
-      return new Box();
+      return new Box(false);
     case RawTile.FALLING_BOX:
-      return new FallingBox();
+      return new Box(true);
     case RawTile.KEY1:
       return new Key1();
     case RawTile.LOCK1:
@@ -560,12 +532,12 @@ function updateTile(y: number, x: number) {
     map[y + 1][x] = new Stone(new Falling());
     map[y][x] = new Air();
   } else if (map[y][x].isBoxy() && map[y + 1][x].isAir()) {
-    map[y + 1][x] = new FallingBox();
+    map[y + 1][x] = new Box(true);
     map[y][x] = new Air();
   } else if (map[y][x].isFallingStone()) {
     map[y][x] = new Stone(new Resting());
   } else if (map[y][x].isFallingBox()) {
-    map[y][x] = new Box();
+    map[y][x] = new Box(false);
   }
 }
 
