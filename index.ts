@@ -28,9 +28,13 @@ interface Tile {
   draw(g: CanvasRenderingContext2D, x: number, y: number): void;
   moveHorizontal(dx: number): void;
   moveVertical(dy: number): void;
+  drop(): void;
+  rest(): void;
 }
 
 class Air implements Tile {
+  drop() {}
+  rest() {}
   isStony() {
     return false;
   }
@@ -65,6 +69,8 @@ class Air implements Tile {
 }
 
 class Flux implements Tile {
+  drop() {}
+  rest() {}
   isStony() {
     return false;
   }
@@ -102,6 +108,8 @@ class Flux implements Tile {
 }
 
 class Unbreakable implements Tile {
+  drop() {}
+  rest() {}
   isStony() {
     return false;
   }
@@ -135,6 +143,8 @@ class Unbreakable implements Tile {
 }
 
 class Player implements Tile {
+  drop() {}
+  rest() {}
   isStony() {
     return false;
   }
@@ -192,9 +202,15 @@ class Resting implements FallingState {
 }
 
 class Stone implements Tile {
-  private readonly falling: FallingState;
+  private falling: FallingState;
   constructor(falling: FallingState) {
     this.falling = falling;
+  }
+  drop() {
+    this.falling = new Falling();
+  }
+  rest() {
+    this.falling = new Resting();
   }
   isStony() {
     return true;
@@ -231,9 +247,15 @@ class Stone implements Tile {
 }
 
 class Box implements Tile {
-  private readonly falling: FallingState;
+  private falling: FallingState;
   constructor(falling: FallingState) {
     this.falling = falling;
+  }
+  drop() {
+    this.falling = new Falling();
+  }
+  rest() {
+    this.falling = new Resting();
   }
   isStony() {
     return false;
@@ -270,6 +292,8 @@ class Box implements Tile {
 }
 
 class Key1 implements Tile {
+  drop() {}
+  rest() {}
   isStony() {
     return false;
   }
@@ -309,6 +333,8 @@ class Key1 implements Tile {
 }
 
 class Key2 implements Tile {
+  drop() {}
+  rest() {}
   isStony() {
     return false;
   }
@@ -348,6 +374,8 @@ class Key2 implements Tile {
 }
 
 class Lock1 implements Tile {
+  drop() {}
+  rest() {}
   isStony() {
     return false;
   }
@@ -381,6 +409,8 @@ class Lock1 implements Tile {
 }
 
 class Lock2 implements Tile {
+  drop() {}
+  rest() {}
   isStony() {
     return false;
   }
@@ -521,16 +551,11 @@ function handleInputs() {
 }
 
 function updateTile(y: number, x: number) {
-  if (map[y][x].isStony() && map[y + 1][x].isAir()) {
-    map[y + 1][x] = new Stone(new Falling());
+  if ((map[y][x].isStony() || map[y][x].isBoxy()) && map[y + 1][x].isAir()) {
+    map[y + 1][x].drop();
     map[y][x] = new Air();
-  } else if (map[y][x].isBoxy() && map[y + 1][x].isAir()) {
-    map[y + 1][x] = new Box(new Falling());
-    map[y][x] = new Air();
-  } else if (map[y][x].isFallingStone()) {
-    map[y][x] = new Stone(new Resting());
-  } else if (map[y][x].isFallingBox()) {
-    map[y][x] = new Box(new Resting());
+  } else if (map[y][x].isFallingStone() || map[y][x].isFallingBox()) {
+    map[y][x].rest();
   }
 }
 
