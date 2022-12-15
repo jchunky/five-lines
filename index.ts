@@ -218,7 +218,6 @@ class Resting implements FallingState {
 
 class FallStrategy {
   constructor(private falling: FallingState) {
-    this.falling = falling;
   }
   getFalling() { return this.falling; }
   update(tile: Tile, y: number, x: number) {
@@ -326,7 +325,6 @@ class Box implements Tile {
 
 class Key implements Tile {
   constructor(private keyConf: KeyConfiguration) {
-    this.keyConf = keyConf;
   }
   update(y: number, x: number) {
     if (map[y][x].canFall() && map[y + 1][x].isAir()) {
@@ -374,7 +372,6 @@ class Key implements Tile {
 
 class MyLock implements Tile {
   constructor(private keyConf: KeyConfiguration) {
-    this.keyConf = keyConf;
   }
   update(y: number, x: number) {
     if (map[y][x].canFall() && map[y + 1][x].isAir()) {
@@ -432,9 +429,6 @@ class RemoveLock2 implements RemoveStrategy {
 
 class KeyConfiguration {
   constructor(private color: string, private _1: boolean, private removeStrategy: RemoveStrategy) {
-    this.color = color;
-    this._1 = _1;
-    this.removeStrategy = removeStrategy;
   }
   getColor() { return this.color; }
   is1() { return this._1; }
