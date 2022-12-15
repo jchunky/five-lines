@@ -209,9 +209,14 @@ class Player implements Tile {
 interface FallingState {
   isFalling(): boolean;
   moveHorizontal(tile: Tile, dx: number): void;
+  drop(tile: Tile, y: number, x: number): void;
 }
 
 class Falling implements FallingState {
+  drop(tile: Tile, y: number, x: number) {
+    map[y + 1][x] = tile;
+    map[y][x] = new Air();
+  }
   isFalling() {
     return true;
   }
@@ -219,6 +224,8 @@ class Falling implements FallingState {
 }
 
 class Resting implements FallingState {
+  drop(tile: Tile, y: number, x: number) {
+  }
   isFalling() {
     return false;
   }
@@ -243,14 +250,7 @@ class FallStrategy {
 
   update(tile: Tile, y: number, x: number) {
     this.falling = map[y+1][x].getBlockOnTopState();
-    this.drop(tile, y, x);
-  }
-
-  private drop(tile: Tile, y: number, x: number) {
-    if (this.falling.isFalling()) {
-      map[y + 1][x] = tile;
-      map[y][x] = new Air();
-    }
+    this.falling.drop(tile, y, x);
   }
 }
 
