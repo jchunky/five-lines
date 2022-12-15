@@ -324,7 +324,11 @@ class Box implements Tile {
   }
 }
 
-class Key1 implements Tile {
+class Key implements Tile {
+  constructor(private color: string, private removeStrategy: RemoveStrategy) {
+    this.color = color;
+    this.removeStrategy = removeStrategy;
+  }
   update(y: number, x: number) {
     if (map[y][x].canFall() && map[y + 1][x].isAir()) {
       map[y][x].drop();
@@ -344,7 +348,7 @@ class Key1 implements Tile {
   drop() {}
   rest() {}
   moveVertical(dy: number) {
-    remove(new RemoveLock1());
+    remove(this.removeStrategy);
     moveToTile(playerx, playery + dy);
   }
 
@@ -354,52 +358,7 @@ class Key1 implements Tile {
   }
 
   draw(g: CanvasRenderingContext2D, x: number, y: number) {
-    g.fillStyle = "#ffcc00";
-    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-  }
-
-  isAir() {
-    return false;
-  }
-  isLock1() {
-    return false;
-  }
-  isLock2() {
-    return false;
-  }
-}
-
-class Key2 implements Tile {
-  update(y: number, x: number) {
-    if (map[y][x].canFall() && map[y + 1][x].isAir()) {
-      map[y][x].drop();
-      map[y + 1][x] = map[y][x];
-      map[y][x] = new Air();
-    } else if (map[y][x].isFalling()) {
-      map[y][x].rest();
-    }
-  }
-
-  canFall() {
-    return false;
-  }
-  isFalling() {
-    return false;
-  }
-  drop() {}
-  rest() {}
-  moveVertical(dy: number) {
-    remove(new RemoveLock2());
-    moveToTile(playerx, playery + dy);
-  }
-
-  moveHorizontal(dx: number) {
-    remove(new RemoveLock2());
-    moveToTile(playerx + dx, playery);
-  }
-
-  draw(g: CanvasRenderingContext2D, x: number, y: number) {
-    g.fillStyle = "#00ccff";
+    g.fillStyle = this.color;
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
 
@@ -511,11 +470,11 @@ function transformTile(tile: RawTile) {
     case RawTile.FALLING_BOX:
       return new Box(new Falling());
     case RawTile.KEY1:
-      return new Key1();
+      return new Key("#ffcc00", new RemoveLock1());
     case RawTile.LOCK1:
       return new Lock1();
     case RawTile.KEY2:
-      return new Key2();
+      return new Key("#ffcc00", new RemoveLock2());
     case RawTile.LOCK2:
       return new Lock2();
     default:
