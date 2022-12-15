@@ -373,7 +373,11 @@ class Key implements Tile {
   }
 }
 
-class Lock1 implements Tile {
+class MyLock implements Tile {
+  constructor(private color: string, private lock1: boolean) {
+    this.color = color;
+    this.lock1 = lock1;
+  }
   update(y: number, x: number) {
     if (map[y][x].canFall() && map[y + 1][x].isAir()) {
       map[y][x].drop();
@@ -397,7 +401,7 @@ class Lock1 implements Tile {
   moveHorizontal(dx: number) {}
 
   draw(g: CanvasRenderingContext2D, x: number, y: number) {
-    g.fillStyle = "#ffcc00";
+    g.fillStyle = this.color;
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
 
@@ -405,49 +409,10 @@ class Lock1 implements Tile {
     return false;
   }
   isLock1() {
-    return true;
+    return this.lock1;
   }
   isLock2() {
-    return false;
-  }
-}
-
-class Lock2 implements Tile {
-  update(y: number, x: number) {
-    if (map[y][x].canFall() && map[y + 1][x].isAir()) {
-      map[y][x].drop();
-      map[y + 1][x] = map[y][x];
-      map[y][x] = new Air();
-    } else if (map[y][x].isFalling()) {
-      map[y][x].rest();
-    }
-  }
-
-  canFall() {
-    return false;
-  }
-  isFalling() {
-    return false;
-  }
-  drop() {}
-  rest() {}
-  moveVertical(dy: number) {}
-
-  moveHorizontal(dx: number) {}
-
-  draw(g: CanvasRenderingContext2D, x: number, y: number) {
-    g.fillStyle = "#00ccff";
-    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-  }
-
-  isAir() {
-    return false;
-  }
-  isLock1() {
-    return false;
-  }
-  isLock2() {
-    return true;
+    return !this.lock1;
   }
 }
 
@@ -472,11 +437,11 @@ function transformTile(tile: RawTile) {
     case RawTile.KEY1:
       return new Key("#ffcc00", new RemoveLock1());
     case RawTile.LOCK1:
-      return new Lock1();
+      return new MyLock("#ffcc00", true);
     case RawTile.KEY2:
-      return new Key("#ffcc00", new RemoveLock2());
+      return new Key("#00ccff", new RemoveLock2());
     case RawTile.LOCK2:
-      return new Lock2();
+      return new MyLock("#00ccff", false);
     default:
       throw new Error("Unexpected tile type: " + tile);
   }
