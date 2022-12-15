@@ -29,9 +29,14 @@ interface Tile {
   drop(): void;
   rest(): void;
   update(y: number, x: number): void;
+  getBlockOnTopState(): FallingState;
 }
 
 class Air implements Tile {
+  getBlockOnTopState(): FallingState {
+    return new Falling();
+  }
+
   update(y: number, x: number) {
     if (map[y][x].canFall() && map[y + 1][x].isAir()) {
       map[y][x].drop();
@@ -72,6 +77,10 @@ class Air implements Tile {
 }
 
 class Flux implements Tile {
+  getBlockOnTopState(): FallingState {
+    return new Resting();
+  }
+
   update(y: number, x: number) {
     if (map[y][x].canFall() && map[y + 1][x].isAir()) {
       map[y][x].drop();
@@ -115,6 +124,10 @@ class Flux implements Tile {
 }
 
 class Unbreakable implements Tile {
+  getBlockOnTopState(): FallingState {
+    return new Resting();
+  }
+
   update(y: number, x: number) {
     if (map[y][x].canFall() && map[y + 1][x].isAir()) {
       map[y][x].drop();
@@ -154,6 +167,10 @@ class Unbreakable implements Tile {
 }
 
 class Player implements Tile {
+  getBlockOnTopState(): FallingState {
+    return new Resting();
+  }
+
   update(y: number, x: number) {
     if (map[y][x].canFall() && map[y + 1][x].isAir()) {
       map[y][x].drop();
@@ -225,7 +242,7 @@ class FallStrategy {
   }
 
   update(tile: Tile, y: number, x: number) {
-    this.falling = map[y+1][x].isAir() ? new Falling() : new Resting();
+    this.falling = map[y+1][x].getBlockOnTopState();
     this.drop(tile, y, x);
   }
 
@@ -238,6 +255,10 @@ class FallStrategy {
 }
 
 class Stone implements Tile {
+  getBlockOnTopState(): FallingState {
+    return new Resting();
+  }
+
   private falling: FallingState;
   private fallStrategy: FallStrategy;
   constructor(falling: FallingState) {
@@ -283,6 +304,10 @@ class Stone implements Tile {
 }
 
 class Box implements Tile {
+  getBlockOnTopState(): FallingState {
+    return new Resting();
+  }
+
   private falling: FallingState;
   private fallStrategy: FallStrategy;
   constructor(falling: FallingState) {
@@ -328,6 +353,10 @@ class Box implements Tile {
 }
 
 class Key implements Tile {
+  getBlockOnTopState(): FallingState {
+    return new Resting();
+  }
+
   constructor(private keyConf: KeyConfiguration) {
   }
   update(y: number, x: number) {
@@ -375,6 +404,10 @@ class Key implements Tile {
 }
 
 class MyLock implements Tile {
+  getBlockOnTopState(): FallingState {
+    return new Resting();
+  }
+
   constructor(private keyConf: KeyConfiguration) {
   }
   update(y: number, x: number) {
