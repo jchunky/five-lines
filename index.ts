@@ -216,27 +216,33 @@ class Resting implements FallingState {
   }
 }
 
-class FallingStrategy {
-  update(y: number, x: number) {
-    if (map[y][x].canFall() && map[y + 1][x].isAir()) {
-      map[y][x].drop();
-      map[y + 1][x] = map[y][x];
+class FallStrategy {
+  constructor(private falling: FallingState) {
+    this.falling = falling;
+  }
+  getFalling() { return this.falling; }
+  update(tile: Tile, y: number, x: number) {
+    this.falling = map[y+1][x].isAir() ? new Falling() : new Resting();
+    this.drop(tile, y, x);
+  }
+
+  private drop(tile: Tile, y: number, x: number) {
+    if (this.falling.isFalling()) {
+      map[y + 1][x] = tile;
       map[y][x] = new Air();
-    } else if (map[y][x].isFalling()) {
-      map[y][x].rest();
     }
   }
 }
 
 class Stone implements Tile {
   private falling: FallingState;
-  private fallingStrategy: FallingStrategy;
+  private fallStrategy: FallStrategy;
   constructor(falling: FallingState) {
     this.falling = falling;
-    this.fallingStrategy = new FallingStrategy();
+    this.fallStrategy = new FallStrategy(falling);
   }
   update(y: number, x: number) {
-    this.fallingStrategy.update(y, x);
+    this.fallStrategy.update(this, y, x);
   }
 
   canFall() {
@@ -254,7 +260,7 @@ class Stone implements Tile {
   moveVertical(dy: number) {}
 
   moveHorizontal(dx: number) {
-    this.falling.moveHorizontal(this, dx);
+    this.fallStrategy.getFalling().moveHorizontal(this, dx);
   }
 
   draw(g: CanvasRenderingContext2D, x: number, y: number) {
@@ -275,13 +281,13 @@ class Stone implements Tile {
 
 class Box implements Tile {
   private falling: FallingState;
-  private fallingStrategy: FallingStrategy;
+  private fallStrategy: FallStrategy;
   constructor(falling: FallingState) {
     this.falling = falling;
-    this.fallingStrategy = new FallingStrategy();
+    this.fallStrategy = new FallStrategy(falling);
   }
   update(y: number, x: number) {
-    this.fallingStrategy.update(y, x);
+    this.fallStrategy.update(this, y, x);
   }
 
   canFall() {
@@ -299,7 +305,7 @@ class Box implements Tile {
   moveVertical(dy: number) {}
 
   moveHorizontal(dx: number) {
-    this.falling.moveHorizontal(this, dx);
+    this.fallStrategy.getFalling().moveHorizontal(this, dx);
   }
 
   draw(g: CanvasRenderingContext2D, x: number, y: number) {
