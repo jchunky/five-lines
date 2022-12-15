@@ -219,7 +219,11 @@ class Resting implements FallingState {
 class FallStrategy {
   constructor(private falling: FallingState) {
   }
-  getFalling() { return this.falling; }
+
+  moveHorizontal(tile: Tile, dx: number) {
+    this.falling.moveHorizontal(tile, dx);
+  }
+
   update(tile: Tile, y: number, x: number) {
     this.falling = map[y+1][x].isAir() ? new Falling() : new Resting();
     this.drop(tile, y, x);
@@ -259,7 +263,7 @@ class Stone implements Tile {
   moveVertical(dy: number) {}
 
   moveHorizontal(dx: number) {
-    this.fallStrategy.getFalling().moveHorizontal(this, dx);
+    this.fallStrategy.moveHorizontal(this, dx);
   }
 
   draw(g: CanvasRenderingContext2D, x: number, y: number) {
@@ -304,7 +308,7 @@ class Box implements Tile {
   moveVertical(dy: number) {}
 
   moveHorizontal(dx: number) {
-    this.fallStrategy.getFalling().moveHorizontal(this, dx);
+    this.fallStrategy.moveHorizontal(this, dx);
   }
 
   draw(g: CanvasRenderingContext2D, x: number, y: number) {
@@ -345,17 +349,17 @@ class Key implements Tile {
   drop() {}
   rest() {}
   moveVertical(dy: number) {
-    remove(this.keyConf.getRemoveStrategy());
+    this.keyConf.removeLock();
     moveToTile(playerx, playery + dy);
   }
 
   moveHorizontal(dx: number) {
-    remove(this.keyConf.getRemoveStrategy());
+    this.keyConf.removeLock();
     moveToTile(playerx + dx, playery);
   }
 
   draw(g: CanvasRenderingContext2D, x: number, y: number) {
-    g.fillStyle = this.keyConf.getColor();
+    this.keyConf.setColor(g);
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
 
@@ -396,7 +400,7 @@ class MyLock implements Tile {
   moveHorizontal(dx: number) {}
 
   draw(g: CanvasRenderingContext2D, x: number, y: number) {
-    g.fillStyle = this.keyConf.getColor();
+    this.keyConf.setColor(g);
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
 
@@ -430,9 +434,13 @@ class RemoveLock2 implements RemoveStrategy {
 class KeyConfiguration {
   constructor(private color: string, private _1: boolean, private removeStrategy: RemoveStrategy) {
   }
-  getColor() { return this.color; }
   is1() { return this._1; }
-  getRemoveStrategy() { return this.removeStrategy; }
+  removeLock() {
+    remove(this.removeStrategy);
+  }
+  setColor(g: CanvasRenderingContext2D) {
+    g.fillStyle = this.color;
+  }
 }
 
 const YELLOW_KEY = new KeyConfiguration("#ffcc00", true, new RemoveLock1());
