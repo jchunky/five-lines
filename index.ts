@@ -30,8 +30,6 @@ interface Tile {
   isLock1(): boolean;
   isKey2(): boolean;
   isLock2(): boolean;
-  isEdible(): boolean;
-  isPushable(): boolean;
   color(g: CanvasRenderingContext2D): void;
   draw(y: number, x: number, g: CanvasRenderingContext2D): void;
   moveHorizontal(dx: number): void;
@@ -41,8 +39,6 @@ interface Tile {
 class Air implements Tile {
   moveVertical(dy: number) { moveToTile(playerx, playery + dy); }
   moveHorizontal(dx: number) { moveToTile(playerx + dx, playery); }
-  isEdible() { return true; }
-  isPushable() { return false; }
   isAir() { return true; }
   isFlux() { return false; }
   isUnbreakable() { return false; }
@@ -61,8 +57,6 @@ class Air implements Tile {
 class Flux implements Tile {
   moveVertical(dy: number) { moveToTile(playerx, playery + dy); }
   moveHorizontal(dx: number) { moveToTile(playerx + dx, playery); }
-  isEdible() { return true; }
-  isPushable() { return false; }
   isAir() { return false; }
   isFlux() { return true; }
   isUnbreakable() { return false; }
@@ -84,8 +78,6 @@ class Flux implements Tile {
 class Unbreakable implements Tile {
   moveVertical(dy: number) {}
   moveHorizontal(dx: number) {}
-  isEdible() { return false; }
-  isPushable() { return false; }
   isAir() { return false; }
   isFlux() { return false; }
   isUnbreakable() { return true; }
@@ -107,8 +99,6 @@ class Unbreakable implements Tile {
 class Player implements Tile {
   moveVertical(dy: number) {}
   moveHorizontal(dx: number) {}
-  isEdible() { return false; }
-  isPushable() { return false; }
   isAir() { return false; }
   isFlux() { return false; }
   isUnbreakable() { return false; }
@@ -135,8 +125,6 @@ class Stone implements Tile {
       moveToTile(playerx + dx, playery);
     }
   }
-  isEdible() { return false; }
-  isPushable() { return true; }
   isAir() { return false; }
   isFlux() { return false; }
   isUnbreakable() { return false; }
@@ -158,8 +146,6 @@ class Stone implements Tile {
 class FallingStone implements Tile {
   moveVertical(dy: number) {}
   moveHorizontal(dx: number) {}
-  isEdible() { return false; }
-  isPushable() { return false; }
   isAir() { return false; }
   isFlux() { return false; }
   isUnbreakable() { return false; }
@@ -189,8 +175,6 @@ class Box implements Tile {
       moveToTile(playerx + dx, playery);
     }
   }
-  isEdible() { return false; }
-  isPushable() { return true; }
   isAir() { return false; }
   isFlux() { return false; }
   isUnbreakable() { return false; }
@@ -212,8 +196,6 @@ class Box implements Tile {
 class FallingBox implements Tile {
   moveVertical(dy: number) {}
   moveHorizontal(dx: number) {}
-  isEdible() { return false; }
-  isPushable() { return false; }
   isAir() { return false; }
   isFlux() { return false; }
   isUnbreakable() { return false; }
@@ -241,8 +223,6 @@ class Key1 implements Tile {
     removeLock1();
     moveToTile(playerx + dx, playery);
   }
-  isEdible() { return false; }
-  isPushable() { return false; }
   isAir() { return false; }
   isFlux() { return false; }
   isUnbreakable() { return false; }
@@ -264,8 +244,6 @@ class Key1 implements Tile {
 class Lock1 implements Tile {
   moveVertical(dy: number) {}
   moveHorizontal(dx: number) {}
-  isEdible() { return false; }
-  isPushable() { return false; }
   isAir() { return false; }
   isFlux() { return false; }
   isUnbreakable() { return false; }
@@ -293,8 +271,6 @@ class Key2 implements Tile {
     removeLock2();
     moveToTile(playerx + dx, playery);
   }
-  isEdible() { return false; }
-  isPushable() { return false; }
   isAir() { return false; }
   isFlux() { return false; }
   isUnbreakable() { return false; }
@@ -316,8 +292,6 @@ class Key2 implements Tile {
 class Lock2 implements Tile {
   moveVertical(dy: number) {}
   moveHorizontal(dx: number) {}
-  isEdible() { return false; }
-  isPushable() { return false; }
   isAir() { return false; }
   isFlux() { return false; }
   isUnbreakable() { return false; }
