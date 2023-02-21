@@ -18,35 +18,20 @@ enum Tile {
 }
 
 interface Input {
-  isUp(): boolean;
-  isDown(): boolean;
-  isLeft(): boolean;
-  isRight(): boolean;
+  handle(): void;
 }
 
 class Up implements Input {
-  isUp() { return true; }
-  isDown() { return false; }
-  isLeft() { return false; }
-  isRight() { return false; }
+  handle() { moveVertical(-1); }
 }
 class Down implements Input {
-  isUp() { return false; }
-  isDown() { return true; }
-  isLeft() { return false; }
-  isRight() { return false; }
+  handle() { moveVertical(1); }
 }
 class Left implements Input {
-  isUp() { return false; }
-  isDown() { return false; }
-  isLeft() { return true; }
-  isRight() { return false; }
+  handle() { moveHorizontal(-1); }
 }
 class Right implements Input {
-  isUp() { return false; }
-  isDown() { return false; }
-  isLeft() { return false; }
-  isRight() { return true; }
+  handle() { moveHorizontal(1); }
 }
 
 let playerx = 1;
@@ -117,17 +102,10 @@ function moveVertical(dy: number) {
   }
 }
 
-function handleInput(input: Input) {
-  if (input.isLeft()) moveHorizontal(-1);
-  else if (input.isRight()) moveHorizontal(1);
-  else if (input.isUp()) moveVertical(-1);
-  else if (input.isDown()) moveVertical(1);
-}
-
 function handleInputs() {
   while (inputs.length > 0) {
-    let current = inputs.pop();
-    handleInput(current);
+    let input = inputs.pop();
+    input.handle();
   }
 }
 
